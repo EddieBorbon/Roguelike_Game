@@ -245,4 +245,4 @@ Thanks for visiting **Roguelike Mastery**! We hope you enjoy building and explor
 This README highlights the key implementations of the project, such as the Singleton pattern, A* algorithm, and smooth movement with coroutines. Feel free to customize it further to suit your needs! 😊
 ```
 
-Ahora el README está completamente en formato Markdown sin la etiqueta `bash` para el código.
+

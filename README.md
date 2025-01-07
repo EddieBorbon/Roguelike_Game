@@ -4,7 +4,7 @@ Welcome to **Roguelike Mastery**! This is an exciting 2D Roguelike game develope
 
  ![Cover](cover.png)
 
- LiveDemo [https://play.unity.com/en/games/b8a01595-416e-46c4-93e4-d15a973ab108/roguelike](https://play.unity.com/en/games/b8a01595-416e-46c4-93e4-d15a973ab108/roguelike)
+[LiveDemo](https://play.unity.com/en/games/b8a01595-416e-46c4-93e4-d15a973ab108/roguelike)
 ---
 
 ## 🚀 Key Features

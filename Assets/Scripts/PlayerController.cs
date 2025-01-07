@@ -295,8 +295,7 @@ public class PlayerController : MonoBehaviour
     public void IncreaseStrength(int amount)
     {
         Strength += amount;
-        Debug.Log($"Fuerza aumentada a {Strength}");
-    }
+          }
 
     public void ActivateTemporaryDefense(int amount)
     {
@@ -324,11 +323,10 @@ public class PlayerController : MonoBehaviour
 
             if (cellData != null && cellData.ContainedObject is Enemy enemy)
             {
-                // Si hay un enemigo en la celda adyacente, atacarlo
-                Attack(); // Ejecutar la animación de ataque
+                Attack(); 
                 enemy.TakeDamage(Strength);
                 Debug.Log("Player Attack Enemy");
-                return; // Atacar solo a un enemigo a la vez
+                return;
             }
         }
     }

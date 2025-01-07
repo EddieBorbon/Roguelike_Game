@@ -238,7 +238,6 @@ public class Enemy : CellObject
     public void EnemyAttack()
     {
         int damageAmount = 1;
-        int playerDefense = GameManager.Instance.playerController.Defense;
         m_Animator.SetTrigger("Attack");
         GameManager.Instance.playerController.TakeDamage();
         GameManager.Instance.ChangeHealth(damageAmount);

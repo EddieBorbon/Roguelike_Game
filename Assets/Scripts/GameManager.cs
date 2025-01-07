@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,7 +61,7 @@ public class GameManager : MonoBehaviour
         m_HealthLabel.text = "Health: " + 5;
         cameraController.AdjustCamera(5, 5);
 
-        StartNewGame(); 
+        StartNewGame();
     }
 
     public void StartNewGame()
@@ -71,7 +73,7 @@ public class GameManager : MonoBehaviour
         m_FoodLabel.text = "Food : " + m_FoodAmount;
 
         boardManager.Clean();
-        boardManager.Init(m_CurrentLevel); 
+        boardManager.Init(m_CurrentLevel);
 
         playerController.Init();
         playerController.Spawn(boardManager, new Vector2Int(1, 1));
@@ -85,7 +87,7 @@ public class GameManager : MonoBehaviour
     {
         m_CurrentLevel++;
         boardManager.Clean();
-        boardManager.Init(m_CurrentLevel); 
+        boardManager.Init(m_CurrentLevel);
         playerController.Spawn(boardManager, new Vector2Int(1, 1));
         ChangeDefense(false);
         OnNewLevel?.Invoke();
@@ -134,25 +136,37 @@ public class GameManager : MonoBehaviour
             Debug.Log("Sin daño.");
             return;
         }
-
-        m_HealthAmount -= damageAmount;
-        m_HealthLabel.text = "Health: " + m_HealthAmount;
-
-        if (m_HealthAmount <= 0)
+        else
         {
-            GameOverManager();
+            m_HealthAmount -= damageAmount;
+            m_HealthLabel.text = "Health: " + m_HealthAmount;
+
+            if (m_HealthAmount <= 0)
+            {
+                GameOverManager();
+            }
         }
     }
 
     public void ActivateTemporaryDefense(int amount)
-{
-    m_HasTemporaryDefense = true;
-}
+    {
+        m_HasTemporaryDefense = true;
+    }
 
-public void GameOverManager()
-{
-    playerController.GameOver();
-    m_GameOverPanel.style.visibility = Visibility.Visible;
-    m_GameOverMessage.text = "Game Over!\n\nYou traveled through " + m_CurrentLevel + " levels";
-}
+    public void GameOverManager()
+    {
+        playerController.GameOver();
+        m_GameOverPanel.style.visibility = Visibility.Visible;
+        m_GameOverMessage.text = "Game Over!\n\nYou traveled through " + m_CurrentLevel + " levels";
+
+        StartCoroutine(ReturnToMainSceneAfterDelay(5f));
+    }
+    private IEnumerator ReturnToMainSceneAfterDelay(float delay)
+    {
+        // Esperar el tiempo especificado
+        yield return new WaitForSeconds(delay);
+
+        // Cargar la Main Scene
+        SceneManager.LoadScene("MainScene");
+    }
 }

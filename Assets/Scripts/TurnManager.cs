@@ -1,15 +1,31 @@
-using UnityEngine;
+using System;
 
 public class TurnManager
 {
-    public event System.Action OnTick;
-    private int m_TurnCount;
-    
-    public TurnManager(){
-        m_TurnCount = 1;
-    }
-    public void Tick(){
-        m_TurnCount += 1;
+    public event Action OnTick; 
+    private int m_CurrentTurn = 0; 
+    private int m_TurnsPerRound = 10; 
+    public bool IsNewRound { get; private set; } 
+
+    public void Tick()
+    {
+        m_CurrentTurn++;
+
+        if (m_CurrentTurn % m_TurnsPerRound == 0)
+        {
+            IsNewRound = true;
+        }
+        else
+        {
+            IsNewRound = false;
+        }
+
         OnTick?.Invoke();
+    }
+
+    public void Reset()
+    {
+        m_CurrentTurn = 0;
+        IsNewRound = false;
     }
 }

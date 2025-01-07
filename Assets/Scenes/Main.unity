@@ -137,11 +137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3373396297934211626, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: TargetOffset.x
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 3373396297934211626, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: TargetOffset.y
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 3373396297934211626, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: CenterOnActivate
@@ -193,7 +193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388611797227320171, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: Lens.OrthographicSize
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 3388611797227320171, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: Target.TrackingTarget
@@ -217,11 +217,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8629407958197240732, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 8629407958197240732, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 8629407958197240732, guid: 0d2bfa05d696c164eaaecbf0929bbcb3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -273,11 +273,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2296314373464726501, guid: 47733f55aa4b4e4418ef2e05bb03908e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 2296314373464726501, guid: 47733f55aa4b4e4418ef2e05bb03908e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 2296314373464726501, guid: 47733f55aa4b4e4418ef2e05bb03908e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -325,7 +325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8396310943014653197, guid: 47733f55aa4b4e4418ef2e05bb03908e, type: 3}
       propertyPath: orthographic size
-      value: 2.5
+      value: 5.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -363,6 +363,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardManager: {fileID: 1999391996}
   playerController: {fileID: 1346069392}
+  cameraController: {fileID: 1980569530}
+  m_HasTemporaryDefense: 0
   UIDoc: {fileID: 442078519}
 --- !u!4 &414611931
 Transform:
@@ -879,6 +881,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CellPosition: {x: 0, y: 0}
+  gameManager: {fileID: 0}
   moveSpeed: 5
 --- !u!212 &1346069393
 SpriteRenderer:

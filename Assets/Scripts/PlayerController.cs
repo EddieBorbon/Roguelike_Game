@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private BoardManager m_Board;
     public Vector2Int m_CellPosition;
+    public GameManager gameManager;
     private bool m_IsGameOver;
 
     public float moveSpeed = 5.0f;
@@ -15,18 +16,21 @@ public class PlayerController : MonoBehaviour
     private Vector3 m_MoveTarget;
 
     private Animator m_animator;
-    private SpriteRenderer m_spriteRenderer; // Referencia al SpriteRenderer
+    private SpriteRenderer m_spriteRenderer; 
 
-    // Evento para notificar el movimiento del jugador
     public static event Action OnPlayerMoved;
 
-    public int Strength { get; private set; } = 1; // Fuerza del jugador
-    public int Defense { get; private set; } = 1; // Defensa del jugador
-    public int Speed { get; private set; } = 1; // Velocidad del jugador
+    public int Strength { get; private set; } = 1; 
+    public int Defense { get; private set; } = 1; 
+    public int Speed { get; private set; } = 1; 
+
+    private int m_TemporaryDefense = 0; 
+    private bool m_HasTemporaryDefense = false; 
+
     private void Awake()
     {
         m_animator = GetComponent<Animator>();
-        m_spriteRenderer = GetComponent<SpriteRenderer>(); // Obtener el SpriteRenderer
+        m_spriteRenderer = GetComponent<SpriteRenderer>(); 
 
         if (m_animator == null)
         {
@@ -132,28 +136,28 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        Vector2Int newCellTarget = m_CellPosition;
+        Vector2Int direction = Vector2Int.zero;
         bool hasMoved = false;
 
         if (Keyboard.current.upArrowKey.wasReleasedThisFrame)
         {
-            newCellTarget.y += Speed; // Mover `Speed` celdas hacia arriba
+            direction = Vector2Int.up; // Dirección hacia arriba
             hasMoved = true;
         }
         else if (Keyboard.current.downArrowKey.wasReleasedThisFrame)
         {
-            newCellTarget.y -= Speed; // Mover `Speed` celdas hacia abajo
+            direction = Vector2Int.down; // Dirección hacia abajo
             hasMoved = true;
         }
         else if (Keyboard.current.rightArrowKey.wasReleasedThisFrame)
         {
-            newCellTarget.x += Speed; // Mover `Speed` celdas hacia la derecha
+            direction = Vector2Int.right; // Dirección hacia la derecha
             hasMoved = true;
             FlipSprite(false); // No voltear el sprite (derecha)
         }
         else if (Keyboard.current.leftArrowKey.wasReleasedThisFrame)
         {
-            newCellTarget.x -= Speed; // Mover `Speed` celdas hacia la izquierda
+            direction = Vector2Int.left; // Dirección hacia la izquierda
             hasMoved = true;
             FlipSprite(true); // Voltear el sprite (izquierda)
         }
@@ -166,22 +170,67 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-            // Verificar si todas las celdas en el camino son pasables
-            if (IsPathClear(m_CellPosition, newCellTarget))
-            {
-                MoveTo(newCellTarget, false);
-                GameManager.Instance.turnManager.Tick();
-            }
-            else
-            {
-                Debug.Log("El camino está bloqueado.");
-            }
+            // Mover al jugador paso a paso
+            MoveStepByStep(direction);
         }
 
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             AttackEnemy();
         }
+    }
+
+    private void MoveStepByStep(Vector2Int direction)
+    {
+        Vector2Int newCellTarget = m_CellPosition;
+        int stepsRemaining = Speed;
+
+        while (stepsRemaining > 0)
+        {
+            Vector2Int nextCell = newCellTarget + direction;
+
+            // Verificar si la siguiente celda es pasable
+            if (IsPathClear(newCellTarget, nextCell))
+            {
+                newCellTarget = nextCell;
+                stepsRemaining--;
+            }
+            else
+            {
+                // Si hay un muro, intentar atacarlo
+                if (AttackWall(nextCell))
+                {
+                    Debug.Log("El jugador atacó el muro.");
+                    GameManager.Instance.turnManager.Tick(); // Avanzar el turno después de atacar
+                }
+                else
+                {
+                    Debug.Log("El camino está bloqueado.");
+                }
+                break; // Detener el movimiento si el camino está bloqueado
+            }
+        }
+
+        // Mover al jugador a la última celda pasable
+        if (newCellTarget != m_CellPosition)
+        {
+            MoveTo(newCellTarget, false);
+            GameManager.Instance.turnManager.Tick();
+        }
+    }
+
+    private bool AttackWall(Vector2Int targetCell)
+    {
+        var cellData = m_Board.GetCellData(targetCell);
+
+        if (cellData != null && cellData.ContainedObject is WallObject wall)
+        {
+            // Si hay un muro en la celda, atacarlo
+            wall.PlayerWantsToEnter(); // Reducir la salud del muro
+            return true; // El jugador atacó el muro
+        }
+
+        return false; // No había un muro para atacar
     }
 
     private bool IsPathClear(Vector2Int start, Vector2Int end)
@@ -223,6 +272,12 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
+        if (m_HasTemporaryDefense)
+        {
+            Debug.Log("El jugador es invencible esta ronda.");
+            return;
+        }
+
         if (m_animator != null)
         {
             m_animator.SetTrigger("Damage");
@@ -243,16 +298,19 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Fuerza aumentada a {Strength}");
     }
 
-    public void IncreaseDefense(int amount)
+    public void ActivateTemporaryDefense(int amount)
     {
-        Defense += amount;
-        Debug.Log($"Defensa aumentada a {Defense}");
+        m_HasTemporaryDefense = true;
+    }
+
+    private void DeactivateTemporaryDefense()
+    {
+        m_HasTemporaryDefense = false;
     }
 
     public void IncreaseSpeed(int amount)
     {
         Speed += amount;
-        Debug.Log($"Velocidad aumentada a {Speed}");
     }
 
     public void AttackEnemy()
@@ -269,7 +327,7 @@ public class PlayerController : MonoBehaviour
                 // Si hay un enemigo en la celda adyacente, atacarlo
                 Attack(); // Ejecutar la animación de ataque
                 enemy.TakeDamage(Strength);
-                Debug.Log("Jugador atacó al enemigo.");
+                Debug.Log("Player Attack Enemy");
                 return; // Atacar solo a un enemigo a la vez
             }
         }

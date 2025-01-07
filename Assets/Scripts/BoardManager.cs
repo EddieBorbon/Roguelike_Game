@@ -12,46 +12,42 @@ public class BoardManager : MonoBehaviour
     private CellData[,] m_BoardData;
     private Tilemap m_Tilemap;
 
-    public int BaseWidth = 5; // Tamaño base del tablero
-    public int BaseHeight = 5; // Tamaño base del tablero
-    public int LevelScaleFactor = 2; // Factor de escala por nivel
+    public int BaseWidth = 5; 
+    public int BaseHeight = 5; 
+    public int LevelScaleFactor = 2; 
     public Tile[] GroundTiles;
     public Tile[] WallTiles;
     public List<Vector2Int> m_EmptyCellsList;
     public Grid m_Grid;
     public FoodObject[] FoodPrefabs;
     public WallObject[] wallPrefabs;
-    public StrengthItem strengthItemPrefab; // Prefab del ítem de fuerza
-    public DefenseItem defenseItemPrefab; // Prefab del ítem de defensa
-    public SpeedItem speedItemPrefab; // Prefab del ítem de velocidad
+    public StrengthItem strengthItemPrefab; 
+    public DefenseItem defenseItemPrefab; 
+    public SpeedItem speedItemPrefab; 
 
 
-    public int BaseMinFoodCount = 3; // Cantidad mínima base de comida
-    public int BaseMaxFoodCount = 7; // Cantidad máxima base de comida
+    public int BaseMinFoodCount = 3; 
+    public int BaseMaxFoodCount = 7; 
     public PlayerController Player;
 
     public ExitCellObject exitCellPrefab;
 
-    public int BaseMinEnemyCount = 1; // Cantidad mínima base de enemigos
-    public int BaseMaxEnemyCount = 5; // Cantidad máxima base de enemigos
+    public int BaseMinEnemyCount = 1; 
+    public int BaseMaxEnemyCount = 5; 
 
     public Enemy[] enemiesPrefabs;
 
     private Enemy[] Enemies;
 
-    public int Width { get; private set; } // Ancho dinámico
-    public int Height { get; private set; } // Alto dinámico
+    public int Width { get; private set; } 
+    public int Height { get; private set; } 
 
-    public PolygonCollider2D boardConfiner; // Referencia al Polygon Collider 2D
+    public PolygonCollider2D boardConfiner;
 
     public CameraController cameraController;
 
-
-
-    // Inicializar el tablero según el nivel
     public void Init(int level)
     {
-        // Calcular el tamaño del tablero basado en el nivel
         Width = BaseWidth + (level * LevelScaleFactor);
         Height = BaseHeight + (level * LevelScaleFactor);
         cameraController.AdjustCamera(Width, Height);
@@ -80,20 +76,16 @@ public class BoardManager : MonoBehaviour
                 m_Tilemap.SetTile(new Vector3Int(x, y, 0), tile);
             }
         }
-        m_EmptyCellsList.Remove(new Vector2Int(1, 1)); // Eliminar la posición inicial del jugador
+        m_EmptyCellsList.Remove(new Vector2Int(1, 1)); 
 
-        // Generar la salida en una ubicación aleatoria
         GenerateExit();
 
-        // Generar paredes, comida y enemigos basados en el nivel
         GenerateWall(level);
         GenerateFood(level);
         GenerateEnemies(level);
 
-        // Generar ítems de estadísticas
         GenerateStatsItems();
 
-        // Ajustar el Polygon Collider 2D para que coincida con el tablero
         AdjustBoardConfiner(Width, Height);
     }
 
@@ -105,14 +97,12 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        // Calcular las coordenadas del collider
         Vector2[] colliderPoints = new Vector2[4];
-        colliderPoints[0] = new Vector2(0, 0); // Esquina inferior izquierda
-        colliderPoints[1] = new Vector2(width, 0); // Esquina inferior derecha
-        colliderPoints[2] = new Vector2(width, height); // Esquina superior derecha
-        colliderPoints[3] = new Vector2(0, height); // Esquina superior izquierda
+        colliderPoints[0] = new Vector2(0, 0); 
+        colliderPoints[1] = new Vector2(width, 0); 
+        colliderPoints[2] = new Vector2(width, height); 
+        colliderPoints[3] = new Vector2(0, height); 
 
-        // Asignar los puntos al collider
         boardConfiner.SetPath(0, colliderPoints);
     }
 
@@ -132,7 +122,7 @@ public class BoardManager : MonoBehaviour
 
     private void GenerateFood(int level)
     {
-        int foodCount = Random.Range(BaseMinFoodCount + level, BaseMaxFoodCount + level); // Aumentar la cantidad de comida según el nivel
+        int foodCount = Random.Range(BaseMinFoodCount + level, BaseMaxFoodCount + level); 
         for (int i = 0; i < foodCount; i++)
         {
             if (m_EmptyCellsList.Count > 0)
@@ -149,7 +139,7 @@ public class BoardManager : MonoBehaviour
 
     private void GenerateWall(int level)
     {
-        int wallCount = Random.Range(6 + level, 10 + level); // Aumentar la cantidad de paredes según el nivel
+        int wallCount = Random.Range(6 + level, 10 + level); 
         for (int i = 0; i < wallCount; ++i)
         {
             if (m_EmptyCellsList.Count > 0)
@@ -184,7 +174,6 @@ public class BoardManager : MonoBehaviour
 
     public void Clean()
     {
-        //no board data, so exit early, nothing to clean
         if (m_BoardData == null)
             return;
 
@@ -202,8 +191,6 @@ public class BoardManager : MonoBehaviour
                 SetCellTile(new Vector2Int(x, y), null);
             }
         }
-
-        // Limpiar el arreglo de enemigos
         if (Enemies != null)
         {
             foreach (var enemy in Enemies)
@@ -217,11 +204,10 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    // Generar enemigos basados en el nivel
     private void GenerateEnemies(int level)
     {
-        int enemyCount = Random.Range(BaseMinEnemyCount + level, BaseMaxEnemyCount + level); // Aumentar la cantidad de enemigos según el nivel
-        Enemies = new Enemy[enemyCount]; // Inicializar el arreglo de enemigos instanciados
+        int enemyCount = Random.Range(BaseMinEnemyCount + level, BaseMaxEnemyCount + level); 
+        Enemies = new Enemy[enemyCount];
 
         for (int i = 0; i < enemyCount; i++)
         {
@@ -232,12 +218,11 @@ public class BoardManager : MonoBehaviour
 
                 m_EmptyCellsList.RemoveAt(randomIndex);
 
-                // Seleccionar un prefab de enemigo aleatorio
                 Enemy randomEnemyPrefab = enemiesPrefabs[Random.Range(0, enemiesPrefabs.Length)];
                 Enemy newEnemy = Instantiate(randomEnemyPrefab);
 
                 AddObject(newEnemy, coord);
-                Enemies[i] = newEnemy; // Agregar el enemigo al arreglo
+                Enemies[i] = newEnemy; 
             }
         }
     }
@@ -248,28 +233,21 @@ public class BoardManager : MonoBehaviour
             int randomIndex = Random.Range(0, m_EmptyCellsList.Count);
             Vector2Int exitCoord = m_EmptyCellsList[randomIndex];
 
-            // Añadir la salida en la coordenada aleatoria
             AddObject(Instantiate(exitCellPrefab), exitCoord);
-            m_EmptyCellsList.Remove(exitCoord); // Eliminar la celda de la lista de celdas vacías
+            m_EmptyCellsList.Remove(exitCoord); 
         }
         else
         {
-            Debug.LogError("No hay celdas disponibles para generar la salida.");
+            Debug.LogError("There are no cells available to generate the output.");
         }
     }
-    // Generar ítems de estadísticas
     private void GenerateStatsItems()
     {
-        // Generar un ítem de fuerza
         GenerateRandomItem(strengthItemPrefab);
-
-        // Generar un ítem de defensa
         GenerateRandomItem(defenseItemPrefab);
-
-        // Generar un ítem de velocidad
         GenerateRandomItem(speedItemPrefab);
     }
-     // Generar un ítem en una celda aleatoria
+
     private void GenerateRandomItem(CellObject itemPrefab)
     {
         if (m_EmptyCellsList.Count > 0)
@@ -283,7 +261,7 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No hay celdas disponibles para generar un ítem.");
+            Debug.LogWarning("There are no cells available to generate an item.");
         }
     }
 }
